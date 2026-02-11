@@ -1,0 +1,6 @@
+{
+    "name": "checkout-kata",
+    "devDependencies": {
+        "jest": "^29.7.0"
+    }
+}
