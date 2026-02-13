@@ -8,9 +8,9 @@ module.exports = class Checkout {
         this.unitPrices.set(item, price);
     }
 
-    scan(item) {
+    scan(item, weight = 1) {
         if (this.unitPrices.has(item)) {
-            this.total += this.unitPrices.get(item);
+            this.total += this.unitPrices.get(item) * weight;
         }
     }
 
