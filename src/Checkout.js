@@ -2,6 +2,8 @@ module.exports = class Checkout {
     constructor() {
         this.unitPrices = new Map();
         this.markdowns = new Map();
+        this.specials = new Map();
+        this.itemCounts = new Map();
         this.total = 0;
     }
 
@@ -13,9 +15,27 @@ module.exports = class Checkout {
         this.markdowns.set(item, amount);
     }
 
+    addSpecial(item, quantity, price) {
+        this.specials.set(item, { quantity, price });
+    }
+
     scan(item, weight = 1) {
         if (this.unitPrices.has(item)) {
             this.total += this.calculateItemPrice(item, weight);
+
+
+            if (weight === 1) {
+                const count = (this.itemCounts.get(item) || 0) + 1;
+                this.itemCounts.set(item, count);
+
+                if (this.specials.has(item)) {
+                    const special = this.specials.get(item);
+                    if (count % special.quantity === 0) {
+                        const adjustment = special.price - (this.getEffectiveUnitPrice(item) * special.quantity);
+                        this.total += adjustment;
+                    }
+                }
+            }
         }
     }
 

@@ -28,7 +28,7 @@ describe('Checkout System', () => {
 
     it('should apply special offer "N for $X"', () => {
         checkout.setUnitPrice('can', 2.00);
-        checkout.addSpecial('can', 3, 5.00); // 3 for $5.00
+        checkout.addSpecial('can', 3, 5.00); 
         checkout.scan('can');
         checkout.scan('can');
         checkout.scan('can');
