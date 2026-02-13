@@ -10,8 +10,12 @@ module.exports = class Checkout {
 
     scan(item, weight = 1) {
         if (this.unitPrices.has(item)) {
-            this.total += this.unitPrices.get(item) * weight;
+            this.total += this.calculateItemPrice(item, weight);
         }
+    }
+
+    calculateItemPrice(item, weight) {
+        return this.unitPrices.get(item) * weight;
     }
 
     currentTotal() {
