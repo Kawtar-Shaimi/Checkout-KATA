@@ -12,4 +12,10 @@ describe('Checkout System', () => {
         checkout.scan('soup');
         expect(checkout.currentTotal()).toBe(1.89);
     });
+
+    it('should calculate total for a weighted item', () => {
+        checkout.setUnitPrice('ground beef', 5.99);
+        checkout.scan('ground beef', 2); 
+        expect(checkout.currentTotal()).toBe(11.98);
+    });
 });
