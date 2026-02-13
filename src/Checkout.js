@@ -20,11 +20,15 @@ module.exports = class Checkout {
     }
 
     calculateItemPrice(item, weight) {
+        return this.getEffectiveUnitPrice(item) * weight;
+    }
+
+    getEffectiveUnitPrice(item) {
         let price = this.unitPrices.get(item);
         if (this.markdowns.has(item)) {
             price -= this.markdowns.get(item);
         }
-        return price * weight;
+        return price;
     }
 
     currentTotal() {
