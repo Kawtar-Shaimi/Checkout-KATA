@@ -28,10 +28,19 @@ describe('Checkout System', () => {
 
     it('should apply special offer "N for $X"', () => {
         checkout.setUnitPrice('can', 2.00);
-        checkout.addSpecial('can', 3, 5.00); 
+        checkout.addSpecial('can', 3, 5.00);
         checkout.scan('can');
         checkout.scan('can');
         checkout.scan('can');
         expect(checkout.currentTotal()).toBe(5.00);
+    });
+
+    it('should apply special offer "Buy N Get M at %X off"', () => {
+        checkout.setUnitPrice('butter', 3.00);
+        checkout.addBuyNGetMAtXOff('butter', 2, 1, 100);
+        checkout.scan('butter');
+        checkout.scan('butter');
+        checkout.scan('butter');
+        expect(checkout.currentTotal()).toBe(6.00);
     });
 });
