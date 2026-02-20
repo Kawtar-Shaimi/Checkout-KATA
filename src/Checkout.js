@@ -38,8 +38,7 @@ module.exports = class Checkout {
         if (this.unitPrices.has(item)) {
             this.total -= this.calculateItemPrice(item, weight);
             if (weight === 1) {
-                const count = (this.itemCounts.get(item) || 1) - 1;
-                this.itemCounts.set(item, count);
+                this.decrementItemCount(item);
             }
         }
     }
@@ -53,6 +52,11 @@ module.exports = class Checkout {
         const count = (this.itemCounts.get(item) || 0) + 1;
         this.itemCounts.set(item, count);
         return count;
+    }
+
+    decrementItemCount(item) {
+        const count = (this.itemCounts.get(item) || 1) - 1;
+        this.itemCounts.set(item, count);
     }
 
     applyNForXDiscount(item, count) {
