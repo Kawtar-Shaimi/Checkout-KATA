@@ -47,11 +47,14 @@ module.exports = class Checkout {
 
     applyNForXDiscount(item, count) {
         if (!this.specials.has(item)) return;
-        const { quantity, price, limit } = this.specials.get(item);
-        if (count > limit) return;
-        if (count % quantity === 0) {
-            this.total += price - (this.getEffectiveUnitPrice(item) * quantity);
+        const special = this.specials.get(item);
+        if (this.specialAppliesAt(special, count)) {
+            this.total += special.price - (this.getEffectiveUnitPrice(item) * special.quantity);
         }
+    }
+
+    specialAppliesAt(special, count) {
+        return count <= special.limit && count % special.quantity === 0;
     }
 
     applyBOGODiscount(item, count) {
