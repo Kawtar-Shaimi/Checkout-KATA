@@ -3,6 +3,7 @@ module.exports = class Checkout {
         this.unitPrices = new Map();
         this.markdowns = new Map();
         this.specials = new Map();
+        this.bogoSpecials = new Map();
         this.itemCounts = new Map();
         this.total = 0;
     }
@@ -19,25 +20,42 @@ module.exports = class Checkout {
         this.specials.set(item, { quantity, price });
     }
 
+    addBuyNGetMAtXOff(item, buyN, getM, percentOff) {
+        this.bogoSpecials.set(item, { buyN, getM, percentOff });
+    }
+
     scan(item, weight = 1) {
         if (this.unitPrices.has(item)) {
             this.total += this.calculateItemPrice(item, weight);
             if (weight === 1) {
-                this.applySpecialDiscount(item);
+                const count = this.incrementItemCount(item);
+                this.applyNForXDiscount(item, count);
+                this.applyBOGODiscount(item, count);
             }
         }
     }
 
-    applySpecialDiscount(item) {
+    incrementItemCount(item) {
         const count = (this.itemCounts.get(item) || 0) + 1;
         this.itemCounts.set(item, count);
+        return count;
+    }
 
-        if (this.specials.has(item)) {
-            const special = this.specials.get(item);
-            if (count % special.quantity === 0) {
-                const adjustment = special.price - (this.getEffectiveUnitPrice(item) * special.quantity);
-                this.total += adjustment;
-            }
+    applyNForXDiscount(item, count) {
+        if (!this.specials.has(item)) return;
+        const special = this.specials.get(item);
+        if (count % special.quantity === 0) {
+            this.total += special.price - (this.getEffectiveUnitPrice(item) * special.quantity);
+        }
+    }
+
+    applyBOGODiscount(item, count) {
+        if (!this.bogoSpecials.has(item)) return;
+        const { buyN, getM, percentOff } = this.bogoSpecials.get(item);
+        const cycleLength = buyN + getM;
+        const positionInCycle = ((count - 1) % cycleLength) + 1;
+        if (positionInCycle > buyN) {
+            this.total -= this.getEffectiveUnitPrice(item) * (percentOff / 100);
         }
     }
 
