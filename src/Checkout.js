@@ -103,7 +103,11 @@ module.exports = class Checkout {
         const fullCyclePrice = buyLbs * unitPrice + discountLbs * discountedPrice;
         const remainderPrice = Math.min(remaining, buyLbs) * unitPrice
             + Math.max(0, remaining - buyLbs) * discountedPrice;
-        return Number((fullCycles * fullCyclePrice + remainderPrice).toFixed(2));
+        return this.round(fullCycles * fullCyclePrice + remainderPrice);
+    }
+
+    round(amount) {
+        return Number(amount.toFixed(2));
     }
 
     getEffectiveUnitPrice(item) {
