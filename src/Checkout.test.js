@@ -50,4 +50,12 @@ describe('Checkout System', () => {
         for (let i = 0; i < 9; i++) checkout.scan('can');
         expect(checkout.currentTotal()).toBe(16.00);
     });
+
+    it('should remove a scanned item and update the total', () => {
+        checkout.setUnitPrice('soup', 1.89);
+        checkout.scan('soup');
+        checkout.scan('soup');
+        checkout.remove('soup');
+        expect(checkout.currentTotal()).toBe(1.89);
+    });
 });
