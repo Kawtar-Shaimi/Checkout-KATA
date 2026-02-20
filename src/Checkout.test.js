@@ -43,4 +43,11 @@ describe('Checkout System', () => {
         checkout.scan('butter');
         expect(checkout.currentTotal()).toBe(6.00);
     });
+
+    it('should stop applying special after limit is reached', () => {
+        checkout.setUnitPrice('can', 2.00);
+        checkout.addSpecial('can', 3, 5.00, 6);
+        for (let i = 0; i < 9; i++) checkout.scan('can');
+        expect(checkout.currentTotal()).toBe(16.00);
+    });
 });
