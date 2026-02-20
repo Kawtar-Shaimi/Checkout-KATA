@@ -4,6 +4,7 @@ module.exports = class Checkout {
         this.markdowns = new Map();
         this.specials = new Map();
         this.bogoSpecials = new Map();
+        this.weightedSpecials = new Map();
         this.itemCounts = new Map();
         this.total = 0;
     }
@@ -22,6 +23,10 @@ module.exports = class Checkout {
 
     addBuyNGetMAtXOff(item, buyN, getM, percentOff) {
         this.bogoSpecials.set(item, { buyN, getM, percentOff });
+    }
+
+    addWeightedSpecial(item, buyLbs, discountLbs, percentOff) {
+        this.weightedSpecials.set(item, { buyLbs, discountLbs, percentOff });
     }
 
     scan(item, weight = 1) {
@@ -82,7 +87,23 @@ module.exports = class Checkout {
     }
 
     calculateItemPrice(item, weight) {
+        if (weight !== 1 && this.weightedSpecials.has(item)) {
+            return this.calculateWeightedSpecialPrice(item, weight);
+        }
         return this.getEffectiveUnitPrice(item) * weight;
+    }
+
+    calculateWeightedSpecialPrice(item, weight) {
+        const { buyLbs, discountLbs, percentOff } = this.weightedSpecials.get(item);
+        const cycleLength = buyLbs + discountLbs;
+        const fullCycles = Math.floor(weight / cycleLength);
+        const remaining = weight % cycleLength;
+        const unitPrice = this.getEffectiveUnitPrice(item);
+        const discountedPrice = unitPrice * (1 - percentOff / 100);
+        const fullCyclePrice = buyLbs * unitPrice + discountLbs * discountedPrice;
+        const remainderPrice = Math.min(remaining, buyLbs) * unitPrice
+            + Math.max(0, remaining - buyLbs) * discountedPrice;
+        return Number((fullCycles * fullCyclePrice + remainderPrice).toFixed(2));
     }
 
     getEffectiveUnitPrice(item) {
