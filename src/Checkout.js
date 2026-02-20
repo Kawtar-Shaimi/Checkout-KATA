@@ -29,10 +29,14 @@ module.exports = class Checkout {
             this.total += this.calculateItemPrice(item, weight);
             if (weight === 1) {
                 const count = this.incrementItemCount(item);
-                this.applyNForXDiscount(item, count);
-                this.applyBOGODiscount(item, count);
+                this.applyAllDiscounts(item, count);
             }
         }
+    }
+
+    applyAllDiscounts(item, count) {
+        this.applyNForXDiscount(item, count);
+        this.applyBOGODiscount(item, count);
     }
 
     incrementItemCount(item) {
