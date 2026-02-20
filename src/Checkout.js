@@ -34,6 +34,16 @@ module.exports = class Checkout {
         }
     }
 
+    remove(item, weight = 1) {
+        if (this.unitPrices.has(item)) {
+            this.total -= this.calculateItemPrice(item, weight);
+            if (weight === 1) {
+                const count = (this.itemCounts.get(item) || 1) - 1;
+                this.itemCounts.set(item, count);
+            }
+        }
+    }
+
     applyAllDiscounts(item, count) {
         this.applyNForXDiscount(item, count);
         this.applyBOGODiscount(item, count);
