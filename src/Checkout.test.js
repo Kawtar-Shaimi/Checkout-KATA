@@ -58,4 +58,11 @@ describe('Checkout System', () => {
         checkout.remove('soup');
         expect(checkout.currentTotal()).toBe(1.89);
     });
+
+    it('should apply a weighted special "Buy N lbs get M lbs at %X off"', () => {
+        checkout.setUnitPrice('ground beef', 5.99);
+        checkout.addWeightedSpecial('ground beef', 2, 1, 50); 
+        checkout.scan('ground beef', 3); 
+        expect(checkout.currentTotal()).toBe(Number((5.99 * 2 + 5.99 * 0.5).toFixed(2)));
+    });
 });
