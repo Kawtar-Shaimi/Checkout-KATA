@@ -16,8 +16,8 @@ module.exports = class Checkout {
         this.markdowns.set(item, amount);
     }
 
-    addSpecial(item, quantity, price) {
-        this.specials.set(item, { quantity, price });
+    addSpecial(item, quantity, price, limit = Infinity) {
+        this.specials.set(item, { quantity, price, limit });
     }
 
     addBuyNGetMAtXOff(item, buyN, getM, percentOff) {
@@ -47,9 +47,10 @@ module.exports = class Checkout {
 
     applyNForXDiscount(item, count) {
         if (!this.specials.has(item)) return;
-        const special = this.specials.get(item);
-        if (count % special.quantity === 0) {
-            this.total += special.price - (this.getEffectiveUnitPrice(item) * special.quantity);
+        const { quantity, price, limit } = this.specials.get(item);
+        if (count > limit) return;
+        if (count % quantity === 0) {
+            this.total += price - (this.getEffectiveUnitPrice(item) * quantity);
         }
     }
 
